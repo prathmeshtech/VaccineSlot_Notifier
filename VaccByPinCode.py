@@ -2,17 +2,17 @@ import requests
 from datetime import datetime
 
 #FindByDistrict API
-base_cowin_url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict"
+base_cowin_url ="https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin"
 now = datetime.now()
 today_date = now.strftime("%d-%m-%Y")
 
 #telegram_bot_API
 api_url_telegram = "https://api.telegram.org/bot1852646143:AAHHIrDa50mcB-uHto1B0cjDFl9k2WFahvk/sendMessage?chat_id=@__groupid__&text="
-
+ 
 group_id = "VaccineSlot_Notifier"
 
-def fetch_data_from_cowin(district_id):
-    query_parameters = "?district_id={}&date={}".format(district_id,today_date)
+def fetch_data_from_cowin(pincode):
+    query_parameters = "?picode={}&date={}".format(pincode,today_date)
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
@@ -27,16 +27,16 @@ def fetch_data_from_cowin(district_id):
 #defining Function for extracting and filtering the required data only
 def extract_availability_data(response):
     response_json = response.json()
-    for center in response_json["centers"]:
-        for session in center["sessions"]:
-            if session["available_capacity_dose1"] > 0 and session["min_age_limit"] == 45 :
-                message = "Pincode: {}, Name: {}, Slots: {}, Minimum Age: {}". format(
-                    center["center_id"],center["name"], 
-                    session["available_capacity_dose1"],
-                    session["min_age_limit"]
-                )
-                send_message_telegram(message)                 
-
+    for session in response_json["sessions"]:
+        if session["available_capacity_dose1"] == 0 and session["min_age_limit"] == 18 :
+            message = "Center_id: {}, Name: {}, Vaccine:{}, Slots: {}, Minimum Age: {}". format(
+                session["center_id"],
+                session["name"],
+                session["vaccine"], 
+                session["available_capacity_dose1"],
+                session["min_age_limit"]
+            )
+            send_message_telegram(message)                 
 
 #defining function for printing the complete message on the group.
 def send_message_telegram(message):
@@ -46,4 +46,4 @@ def send_message_telegram(message):
     print(response)
 
 if __name__ == "__main__":
-    fetch_data_from_cowin(393)
+    fetch_data_from_cowin(402107)
