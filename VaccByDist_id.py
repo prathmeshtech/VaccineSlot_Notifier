@@ -7,7 +7,7 @@ now = datetime.now()
 today_date = now.strftime("%d-%m-%Y")
 
 #telegram_bot_API
-api_url_telegram = "https://api.telegram.org/bot1852646143:AAHHIrDa50mcB-uHto1B0cjDFl9k2WFahvk/sendMessage?chat_id=@__groupid__&text="
+api_url_telegram = "https://api.telegram.org/bot<token>/sendMessage?chat_id=@__groupid__&text="
 
 group_id = "VaccineSlot_Notifier"
 
@@ -45,5 +45,6 @@ def send_message_telegram(message):
     response = requests.get(final_telegram_url)
     print(response)
 
+#main function
 if __name__ == "__main__":
     fetch_data_from_cowin(393)
